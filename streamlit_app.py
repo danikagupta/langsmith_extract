@@ -27,8 +27,9 @@ def run_groq(li):
     total_time_taken=0
     original_time_taken=0
     result_list=[]
-    with st.expander("Groq run"):
-        for l in li:
+    my_bar = st.progress(0, text=f"Groq will process {len(li)} calls")
+    with st.sidebar.expander("Groq logs"):
+        for i,l in enumerate(li):
             inp=l['in1']
             out1=l['out1']
             time1=l['time1']
@@ -39,6 +40,9 @@ def run_groq(li):
             original_time_taken+=time1
             st.write(f"{resp=}, {time_taken=}")
             result_list.append({"inp":str(inp)[:50],"LLM time":time1,"Groq time":time_taken,"LLM Output":out1,"Groq Output":resp})
+
+            pct_complete=int(100*(i+1)/len(li))
+            my_bar.progress(pct_complete,text=f"Finished {i+1} of {len(li)} calls")
 
     savings=100*(original_time_taken-total_time_taken)/original_time_taken
     st.header(f"Saved {savings:.1f}%, Groq time: {total_time_taken:.1f} vs. LLM time: {original_time_taken:.1f} seconds") 
@@ -79,10 +83,10 @@ def get_run_info(run_id):
 def show_run(pr):
     st.header(f"Run: {pr.id}")
     li=get_run_info(pr.id)
-    with st.expander("Full list"):
+    with st.sidebar.expander("Full list"):
         for i,l in enumerate(li):
             st.write(f"Element {i}: {l}\n")
-    if st.button("Run Groq"):
+    if st.sidebar.button("Run Groq"):
         results=run_groq(li)
         st.dataframe(results)
 
