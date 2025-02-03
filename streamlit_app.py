@@ -21,6 +21,7 @@ def create_llm_message(original_list):
       new_list.append(HumanMessage(content=dict['content']))
     else:
       new_list.append(AIMessage(content=dict['content']))
+  print(f"DEBUG: CREATE-LLM-MESSAGE: {new_list=}")
   return new_list
 
 def run_groq(li):
@@ -51,10 +52,17 @@ def run_groq(li):
 def get_run_info(run_id):
     project_runs2a=client.list_runs(run_ids=[run_id],error=False)
     prlist2a=list(project_runs2a)
+    print(f"Get_run_info: {prlist2a=}")
     one_run=prlist2a[0]
+    print(f"Get_run_info: {one_run=}")
     child_runs=one_run.child_run_ids
+    print(f"Get_run_info: {child_runs=}")
+    if child_runs is None:
+        child_runs=[run_id]
+        print(f"Get_run_info UPDATED: {child_runs=}")
     project_runs2b=client.list_runs(run_ids=child_runs,error=False)
     prlist2b=list(project_runs2b)
+    print(f"Get_run_info: {prlist2b=}")
 
     full_list=[]
 
